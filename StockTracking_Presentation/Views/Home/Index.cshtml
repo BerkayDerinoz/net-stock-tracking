@@ -1,0 +1,22 @@
+﻿@using StockTracking_Presentation.Models;
+@model List<ProductView>
+    <div class="background">
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-3 mt-5 mb-5">
+                    <div class="card !important">
+                        <img src="@item.Photo" class="card-img-top height:80% !important" alt="Photo not found">
+
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Name</h5>
+                            <p>@item.DateCreated</p>
+                            <p class="card-text" style="height:100px; display:flex; align-items:center;">@item.DescriptionIndex</p>
+                            <p class="card-text">@item.Price TL</p>
+                            <a href="@Url.Action("Detail", "Product", new {id=item.Id})" class="btn btn-primary">Detay</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>

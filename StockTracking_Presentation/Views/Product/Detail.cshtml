@@ -1,0 +1,70 @@
+﻿@using StockTracking_Presentation.Models;
+@model ProductDetail
+<script src="~/js/signalr/dist/browser/signalr.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    (function setupConnection() {
+        var connection = new signalR.HubConnectionBuilder().withUrl("/orderHub").build();
+        connection.on("lastOrder", function (response) {
+            console.log(response);
+            if (response.isSuccess === true) {
+                $("#stockCount").html(response.activeStock);
+            }
+            else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Hata!',
+                    text: response.message,
+                });
+            }
+
+        });
+        connection.start().catch(err => console.error(err.toString())).then(response => console.log("connected"));
+    }) ();
+    //setupConnection();
+        function createOrder() {
+            let size = parseInt(document.getElementById("size").value);
+
+        let product = @Model.Id;
+        fetch("/Order", {
+            method: "POST",
+            body: JSON.stringify({
+                product, size
+            }),
+            headers: {
+                'content-type': 'application/json'
+            }
+        }).then(response => console.log("order created"));
+    }
+</script>
+<div class="row">
+    <div class="col-md-3">
+        <img src="@Model.Photo" alt="@Model.Name" class="w-100 img-thumbnail img-fluid" />
+    </div>
+    <div class="col-md-9">
+        <div class="card" style="height: 100%; display: flex;">
+            <h5 class="card-header">Ürün Detayları</h5>
+            <div class="card-body" style="display: flex; flex-direction: column; justify-content: center;">
+                <h5 class="card-title">@Model.Name</h5>
+                <p class="card-text">@Model.Description</p>
+                <p class="card-text">@Model.Price TL</p>
+                <p class="card-text">Stok Sayısı: <strong id="stockCount">@Model.Stock</strong></p>
+
+                    <div class="form-group">
+                        <label>Ürün Sayısı</label>
+                        <input type="number" min="1" value="1" class="form-control" id="size" placeholder="Sayı">
+                    </div>
+                    <div class="row mt-4">
+                        <div class="col float-left">
+                            <button onclick="createOrder();" class="btn btn-primary">Satın Al</button>
+                        </div>
+                        <div class="col float-right">
+                            <a asp-action="Index" asp-controller="Home" class="btn btn-danger" style="float:right;">Geri Dön</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
